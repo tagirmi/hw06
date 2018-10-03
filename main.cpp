@@ -49,13 +49,13 @@ int main(int argc, char const *argv[])
     std::cout << "\nMatrix size:" << std::endl;
     std::cout << matrix.size() << std::endl;
 
-//    std::cout << "\nMatrix not empty cells:" << std::endl;
-//    for (auto& cell : matrix) {
-//      size_t i, j;
-//      int v;
-//      std::tie(i, j, v) = cell;
-//      std::cout << i << j << v << std::endl;
-//    }
+    std::cout << "\nMatrix not empty cells:" << std::endl;
+    for (auto& cell : matrix) {
+      size_t i, j;
+      int v;
+      std::tie(i, j, v) = cell;
+      std::cout << i << j << v << std::endl;
+    }
   }
   catch(const std::exception& ex)
   {

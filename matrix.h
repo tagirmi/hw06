@@ -5,6 +5,22 @@
 
 namespace hw06 {
 
+namespace details {
+
+template<typename T, std::size_t... I>
+auto toTuple(const T& array, std::index_sequence<I...>)
+{
+    return std::make_tuple(array[I]...);
+}
+
+template<typename T, std::size_t N, typename Indices = std::make_index_sequence<N>>
+auto toTuple(const std::array<T, N>& array)
+{
+    return toTuple(array, Indices{});
+}
+
+}
+
 template<typename T, T Def>
 class Matrix
 {
@@ -53,6 +69,61 @@ public:
     Data& m_data;
     T m_default{Def};
   };
+
+  struct IteratorProxy
+  {
+      explicit IteratorProxy(typename Data::const_iterator it)
+        : m_dataIterator(it)
+      {
+      }
+
+      auto& operator++()
+      {
+        ++m_dataIterator;
+        return *this;
+      }
+
+      auto& operator*()
+      {
+        return std::tuple_cat(details::toTuple(m_dataIterator->first), std::make_tuple(m_dataIterator->second));
+      }
+
+      bool operator==(const IteratorProxy& other) const
+      {
+        return m_dataIterator == other.m_dataIterator;
+      }
+
+      bool operator!=(const IteratorProxy& other) const
+      {
+        return !(*this == other);
+      }
+
+    private:
+      typename Data::const_iterator m_dataIterator;
+  };
+
+  using iterator = IteratorProxy;
+  using const_iterator = const IteratorProxy;
+
+//  iterator begin()
+//  {
+//    return IteratorProxy(m_data.begin());
+//  }
+
+//  iterator end()
+//  {
+//    return IteratorProxy(m_data.end());
+//  }
+
+  const_iterator begin() const
+  {
+    return IteratorProxy(m_data.begin());
+  }
+
+  const_iterator end() const
+  {
+    return IteratorProxy(m_data.end());
+  }
 
   Matrix() = default;
 
