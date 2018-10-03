@@ -16,6 +16,14 @@ void test_matrix()
   assert(matrix[100][100] == 314);
   assert(matrix.size() == 1);
 
+  for(auto cell : matrix) {
+    int x;
+    int y;
+    int v;
+    std::tie(x, y, v) = cell;
+    std::cout << x << y << v << std::endl;
+  }
+
   matrix[100][100] = -1;
   assert(matrix[100][100] == -1);
   assert(matrix.size() == 0);
@@ -50,7 +58,7 @@ int main(int argc, char const *argv[])
     std::cout << matrix.size() << std::endl;
 
     std::cout << "\nMatrix not empty cells:" << std::endl;
-    for (auto& cell : matrix) {
+    for (auto cell : matrix) {
       size_t i, j;
       int v;
       std::tie(i, j, v) = cell;

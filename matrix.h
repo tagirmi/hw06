@@ -43,13 +43,13 @@ public:
     {
     }
 
-    auto operator [](size_t i)
+    auto operator[](size_t i)
     {
       m_index[1] = i;
       return Proxy{m_index, m_data};
     }
 
-    auto& operator =(const T& value)
+    auto& operator=(const T& value)
     {
       if (value == Def) {
         m_data.erase(m_index);
@@ -58,7 +58,7 @@ public:
       m_data[m_index] = value;
     }
 
-    operator const T& () const
+    operator const T&() const
     {
       auto i = m_data.find(m_index);
       return i == m_data.end() ? m_default : i->second;
@@ -70,9 +70,13 @@ public:
     T m_default{Def};
   };
 
-  struct IteratorProxy
+  using DataIterator = typename Data::iterator;
+
+  struct iterator : std::iterator<std::forward_iterator_tag, DataIterator>
   {
-      explicit IteratorProxy(typename Data::const_iterator it)
+      iterator() = default;
+
+      explicit iterator(DataIterator it)
         : m_dataIterator(it)
       {
       }
@@ -83,46 +87,40 @@ public:
         return *this;
       }
 
-      auto& operator*()
+      auto operator++(int)
+      {
+        auto temp = *this;
+        ++m_dataIterator;
+        return temp;
+      }
+
+      auto operator*()
       {
         return std::tuple_cat(details::toTuple(m_dataIterator->first), std::make_tuple(m_dataIterator->second));
       }
 
-      bool operator==(const IteratorProxy& other) const
+      bool operator==(const iterator& other) const
       {
         return m_dataIterator == other.m_dataIterator;
       }
 
-      bool operator!=(const IteratorProxy& other) const
+      bool operator!=(const iterator& other) const
       {
         return !(*this == other);
       }
 
     private:
-      typename Data::const_iterator m_dataIterator;
+      DataIterator m_dataIterator{};
   };
 
-  using iterator = IteratorProxy;
-  using const_iterator = const IteratorProxy;
-
-//  iterator begin()
-//  {
-//    return IteratorProxy(m_data.begin());
-//  }
-
-//  iterator end()
-//  {
-//    return IteratorProxy(m_data.end());
-//  }
-
-  const_iterator begin() const
+  iterator begin()
   {
-    return IteratorProxy(m_data.begin());
+    return iterator(m_data.begin());
   }
 
-  const_iterator end() const
+  iterator end()
   {
-    return IteratorProxy(m_data.end());
+    return iterator(m_data.end());
   }
 
   Matrix() = default;
@@ -132,7 +130,7 @@ public:
     return m_data.size();
   }
 
-  Proxy operator [](size_t index)
+  Proxy operator[](size_t index)
   {
     return Proxy{index, m_data};
   }
