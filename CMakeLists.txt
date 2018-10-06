@@ -8,26 +8,26 @@ endif()
 
 project(matrix VERSION 0.0.${BUILD})
 
-#find_package(GTest REQUIRED)
-#find_package(Threads REQUIRED)
+find_package(GTest REQUIRED)
+find_package(Threads REQUIRED)
 
 add_executable(${PROJECT_NAME} "main.cpp")
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
 
 # unit tests
-#include_directories(${GTEST_INCLUDE_DIR})
-#add_executable(test_print_ip test_print_ip.cpp)
-#target_link_libraries(test_print_ip ${GTEST_LIBRARY} ${GTEST_MAIN_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
+include_directories(${GTEST_INCLUDE_DIR})
+add_executable(test_matrix test_matrix.cpp)
+target_link_libraries(test_matrix ${GTEST_LIBRARY} ${GTEST_MAIN_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
 
-set_target_properties(${PROJECT_NAME} PROPERTIES
+set_target_properties(${PROJECT_NAME} test_matrix PROPERTIES
   CXX_STANDARD 14
   CXX_STANDARD_REQUIRED ON
   COMPILE_OPTIONS -Wpedantic -Wall -Wextra
 )
 
-#enable_testing()
-#add_test(TestPrintIp test_print_ip)
+enable_testing()
+add_test(TestMatrix test_matrix)
 
 set(CPACK_GENERATOR DEB)
 
