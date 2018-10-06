@@ -28,9 +28,9 @@ void test_matrix()
   assert(matrix[100][100] == -1);
   assert(matrix.size() == 0);
 
-//  ((matrix[100][100] = 314) = 0) = 217;
-//  assert(matrix[100][100] == 217);
-//  assert(matrix.size() == 1);
+  ((matrix[100][100] = 314) = 0) = 217;
+  assert(matrix[100][100] == 217);
+  assert(matrix.size() == 1);
 }
 
 int main(int argc, char const *argv[])

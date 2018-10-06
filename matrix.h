@@ -56,6 +56,7 @@ public:
         return m_default;
       }
       m_data[m_index] = value;
+      return m_data[m_index];
     }
 
     operator const T&() const
