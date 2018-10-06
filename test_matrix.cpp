@@ -86,3 +86,28 @@ TEST(TestMatrix, AssignOperator)
   EXPECT_EQ(matrix[100][100], 217);
   EXPECT_EQ(matrix.size(), 1);
 }
+
+TEST(TestMatrix, FiveDimensional)
+{
+  hw06::Matrix<int, defaultValue, 5> matrix;
+
+  EXPECT_EQ(matrix.size(), 0);
+
+  matrix[1][2][3][4][5] = 12345;
+
+  EXPECT_EQ(matrix.size(), 1);
+  EXPECT_EQ(matrix[1][2][3][4][5], 12345);
+
+  auto iter = matrix.begin();
+
+  EXPECT_EQ(std::get<0>(*iter), 1);
+  EXPECT_EQ(std::get<1>(*iter), 2);
+  EXPECT_EQ(std::get<2>(*iter), 3);
+  EXPECT_EQ(std::get<3>(*iter), 4);
+  EXPECT_EQ(std::get<4>(*iter), 5);
+  EXPECT_EQ(std::get<5>(*iter), 12345);
+
+  matrix[1][2][3][4][5] = defaultValue;
+
+  EXPECT_EQ(matrix.size(), 0);
+}
