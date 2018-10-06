@@ -21,23 +21,18 @@ auto toTuple(const std::array<T, N>& array)
 
 }
 
-template<typename T, T Def>
+template<typename T, T Default, size_t Dimension = 2>
 class Matrix
 {
 public:
-  using Index = std::array<size_t, 2>;
+  using Index = std::array<size_t, Dimension>;
   using Data = std::map<Index, T>;
 
+  template<size_t N, typename F = void>
   class Proxy
   {
   public:
-    Proxy(size_t index, Data& data)
-      : m_index{index, 0}
-      , m_data{data}
-    {
-    }
-
-    Proxy(const Index& index, Data& data)
+    Proxy(const std::array<size_t, N>& index, Data& data)
       : m_index{index}
       , m_data{data}
     {
@@ -45,13 +40,30 @@ public:
 
     auto operator[](size_t i)
     {
-      m_index[1] = i;
-      return Proxy{m_index, m_data};
+      std::array<size_t, N + 1> index;
+      std::copy(std::begin(m_index), std::end(m_index), std::begin(index));
+      index[N] = i;
+      return Proxy<N + 1>{index, m_data};
+    }
+
+  private:
+    std::array<size_t, N> m_index;
+    Data& m_data;
+  };
+
+  template<typename F>
+  class Proxy<Dimension, F>
+  {
+  public:
+    Proxy(const Index& index, Data& data)
+      : m_index{index}
+      , m_data{data}
+    {
     }
 
     auto& operator=(const T& value)
     {
-      if (value == Def) {
+      if (value == Default) {
         m_data.erase(m_index);
         return m_default;
       }
@@ -62,13 +74,16 @@ public:
     operator const T&() const
     {
       auto i = m_data.find(m_index);
-      return i == m_data.end() ? m_default : i->second;
+      if (i != m_data.end())
+        return i->second;
+
+      return m_default;
     }
 
   private:
     Index m_index;
     Data& m_data;
-    T m_default{Def};
+    T m_default{Default};
   };
 
   using DataIterator = typename Data::iterator;
@@ -126,14 +141,37 @@ public:
 
   Matrix() = default;
 
+  Matrix(const Matrix& other)
+    : m_data{other.m_data}
+  {
+  }
+
+  Matrix(Matrix&& other) noexcept
+  {
+    m_data = std::move(other.m_data);
+  }
+
+  Matrix& operator=(const Matrix& other)
+  {
+    m_data = other.m_data;
+    return *this;
+  }
+
+  Matrix& operator=(Matrix&& other) noexcept
+  {
+    m_data = std::move(other.m_data);
+    return *this;
+  }
+
   size_t size() const
   {
     return m_data.size();
   }
 
-  Proxy operator[](size_t index)
+  auto operator[](size_t i)
   {
-    return Proxy{index, m_data};
+    const std::array<size_t, 1> index{i};
+    return Proxy<1>{index, m_data};
   }
 
 private:
